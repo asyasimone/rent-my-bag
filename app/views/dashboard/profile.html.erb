@@ -1,0 +1,54 @@
+<div id="container">
+  <h1>Voici ton Dashboard</h1>
+  <div class="first-container">
+    <div class="card-profile">
+      <h2>Mon profil</h2>
+      <%= image_tag "https://kitt.lewagon.com/placeholder/users/arthur-littm", class: "avatar-large", alt: "avatar-large" %>
+      <ul>
+        <li><%= current_user.name %></li>
+        <li><%= current_user.email %></li>
+        <li><%= current_user.phone_number %></li>
+        <li><%= current_user.address %></li>
+      </ul>
+    </div>
+    <div class="card-bags">
+      <h2>Mes sacs</h2>
+        <% @bags.each do |bag| %>
+          <p>
+          <%= link_to bag.brand, bag_path(bag), class: 'btn btn-primary' %>
+          </p>
+        <% end %>
+      <%= link_to 'créer un nouveau sac', new_bag_path, class: 'btn btn-secondary' %>
+    </div>
+  </div>
+  <div class="second-container">
+    <div class="card-reservations">
+      <h2><i class="fa-solid fa-calendar-check"></i>  Mes réservations</h2>
+      <ul>
+        <% @bookings.each do |booking| %>
+          <li><p><%= booking.bag.brand %></p> <strong><%= booking.total_price %>€</strong> <%= booking.status %></li>
+          <p class="booking-date"><%= booking.start_date %> - <%= booking.end_date %></p>
+        <% end %>
+      </ul>
+      <p class="total">Prix total: <%= @total_price %>€</p>
+    </div>
+    <div class="card-demandes">
+      <h2><i class="fa-solid fa-bag-shopping"></i>  Mes sacs demandes</h2>
+      <ol>
+        <% @owner_bookings.each do |booking|%>
+          <li>
+            <p><%= booking.bag.brand %></p> <strong><%= booking.total_price %>€</strong>
+            <div data-controller="update-status" >
+              <%= form_with model: [booking.bag, booking], method: :patch,  data: { turbo: false } do |form| %>
+                <%= form.hidden_field :status %>
+                <%= form.submit "Acceptée", name: "commit", value: "acceptée", data: { turbo: "submit-end->updateStatus#acceptée" }, class: 'accept' %>
+                <%= form.submit "Declinée", name: "commit", value: "declinée", data: { turbo: "submit-end->updateStatus#declinée" }, class: 'deny' %>
+              <% end %>
+            </div>
+          </li>
+          <p class="booking-date"><%= booking.start_date %> - <%= booking.end_date %></p>
+        <% end %>
+      </ol>
+    </div>
+  </div>
+</div>
